@@ -1,0 +1,183 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#define MAX 100
+
+struct Product
+{
+    int id;
+    char name[50];
+    float price;
+};
+
+struct BillItem
+{
+    int id;
+    char name[50];
+    float price;
+    int qty;
+};
+
+struct Product products[MAX];
+int productCount = 0;
+
+// FUNCTION: Add new product
+void addProduct()
+{
+    struct Product p;
+
+    printf("\nEnter Product ID: ");
+    scanf("%d", &p.id);
+
+    printf("Enter Product Name: ");
+    scanf("%s", p.name);
+
+    printf("Enter Product Price: ");
+    scanf("%f", &p.price);
+
+    products[productCount++] = p;
+
+    printf("\nProduct Added Successfully!\n");
+}
+
+// FUNCTION: Display all products
+void displayProducts()
+{
+    printf("\n---------------- PRODUCT LIST ----------------\n");
+    printf("ID\tName\t\tPrice\n");
+    printf("----------------------------------------------\n");
+
+    for (int i = 0; i < productCount; i++)
+    {
+        printf("%d\t%-10s\t%.2f\n",
+               products[i].id,
+               products[i].name,
+               products[i].price);
+    }
+}
+
+// FUNCTION: Create bill
+void createBill()
+{
+    struct BillItem bill[MAX];
+    int billCount = 0, pid, qty;
+    float subtotal = 0, gst, total;
+
+    while (1)
+    {
+        printf("\nEnter Product ID to add (0 to finish): ");
+        scanf("%d", &pid);
+        if (pid == 0)
+            break;
+
+        int found = -1;
+
+        for (int i = 0; i < productCount; i++)
+        {
+            if (products[i].id == pid)
+                found = i;
+        }
+
+        if (found == -1)
+        {
+            printf("Product Not Found!\n");
+            continue;
+        }
+
+        printf("Enter Quantity: ");
+        scanf("%d", &qty);
+
+        bill[billCount].id = pid;
+        strcpy(bill[billCount].name, products[found].name);
+        bill[billCount].price = products[found].price;
+        bill[billCount].qty = qty;
+
+        subtotal += bill[billCount].price * qty;
+        billCount++;
+
+        printf("Item Added to Bill!\n");
+    }
+
+    gst = subtotal * 0.18;
+    total = subtotal + gst;
+
+    printf("\n---------------- ITEMIZED BILL ----------------\n");
+    printf("Name\tQty\tPrice\tTotal\n");
+    printf("-----------------------------------------------\n");
+
+    for (int i = 0; i < billCount; i++)
+    {
+        printf("%-7s\t%d\t%.2f\t%.2f\n",
+               bill[i].name,
+               bill[i].qty,
+               bill[i].price,
+               bill[i].price * bill[i].qty);
+    }
+
+    printf("\nSubtotal: %.2f", subtotal);
+    printf("\nGST (18%%): %.2f", gst);
+    printf("\nTOTAL: %.2f\n", total);
+
+    // SAVE BILL TO FILE
+    time_t t = time(NULL);
+    char fname[50];
+    strftime(fname, sizeof(fname), "Bill_%Y%m%d_%H%M%S.txt", localtime(&t));
+
+    FILE *fp = fopen(fname, "w");
+
+    fprintf(fp, "---------------- ITEMIZED BILL ----------------\n");
+    for (int i = 0; i < billCount; i++)
+    {
+        fprintf(fp, "%-7s\t%d\t%.2f\t%.2f\n",
+                bill[i].name,
+                bill[i].qty,
+                bill[i].price,
+                bill[i].price * bill[i].qty);
+    }
+
+    fprintf(fp, "\nSubtotal: %.2f", subtotal);
+    fprintf(fp, "\nGST (18%%): %.2f", gst);
+    fprintf(fp, "\nTOTAL: %.2f\n", total);
+
+    fclose(fp);
+
+    printf("\nBill Saved Successfully as: %s\n", fname);
+}
+
+// MAIN MENU
+int main()
+{
+    int choice;
+
+    while (1)
+    {
+        printf("\n================== SHOP BILL SYSTEM ==================\n");
+        printf("1. Add Product\n");
+        printf("2. Display Products\n");
+        printf("3. Create Bill\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice)
+        {
+        case 1:
+            addProduct();
+            break;
+        case 2:
+            displayProducts();
+            break;
+        case 3:
+            createBill();
+            break;
+        case 4:
+            printf("Exiting...");
+            exit(0);
+        default:
+            printf("Invalid Choice! Try Again.\n");
+        }
+    }
+    return 0;
+}
