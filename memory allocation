@@ -1,0 +1,9 @@
+#include <stdio.h>
+
+int main() {
+    int num = 22;
+    
+    // Finding size of num
+    printf("%d bytes", sizeof(num));
+    return 0;
+}
