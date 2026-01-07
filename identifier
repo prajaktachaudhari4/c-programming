@@ -1,0 +1,18 @@
+#include <stdio.h>
+
+int main() {
+      
+      // Creating an integer variable and
+      // assign it the identifier 'var'
+      int var;
+  
+      // Assigning value to the variable
+      // using assigned name
+      var = 10;
+  
+      // Referring to same variable using 
+      // assigned name
+      printf("%d", var);
+      
+      return 0;
+}
