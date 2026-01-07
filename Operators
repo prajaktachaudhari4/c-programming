@@ -1,0 +1,9 @@
+#include <stdio.h>
+int main() {
+    
+    // Expression for getting sum
+    int sum = 10 + 20;
+    
+    printf("%d", sum);
+    return 0;
+}
